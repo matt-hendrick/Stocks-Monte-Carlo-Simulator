@@ -1,10 +1,12 @@
 import streamlit as st
-from test import *
+from investmentMonteCarloSim import *
 
 
 def runSim():
     runMonteCarloSim(symbol)
 
+
+st.header("Monte Carlo Simulation of Stock Prices (1000 simulations)")
 
 symbol = st.text_input("Enter a stock ticker")
 
