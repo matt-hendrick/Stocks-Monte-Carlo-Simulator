@@ -17,6 +17,7 @@ def runInvestmentMonteCarloSim(symbol="^SPX", initialInvestment=1, monthlyInvest
     end = dt.datetime.today().strftime("%Y, %m, %d")
 
     prices = web.DataReader(symbol, 'stooq', start, end)['Close']
+    prices = web.DataReader(symbol, 'stooq', start, end)['Close']
     returns = prices.pct_change()
 
     last_price = initialInvestment
@@ -28,16 +29,19 @@ def runInvestmentMonteCarloSim(symbol="^SPX", initialInvestment=1, monthlyInvest
 
     simulation_df = pd.DataFrame()
 
-    print(returns.std())
+    stdev = returns.std()
+    # mean and drift are unused atm
+    mean = returns.mean()
+    variance = returns.var()
+    drift = mean - (0.5 * variance)
 
     for x in range(num_simulations):
         count = 0
-        daily_vol = returns.std()
 
         price_series = []
 
         price = last_price * \
-            (1 + np.random.normal(0, daily_vol))
+            (1 + np.random.normal(0, stdev))
         price_series.append(price)
 
         for y in range(num_days):
@@ -46,12 +50,12 @@ def runInvestmentMonteCarloSim(symbol="^SPX", initialInvestment=1, monthlyInvest
             # 252 trading days / 12 months of the year = 21
             if count % 21 == 0:
                 price = price_series[count] + monthlyInvestment * \
-                    (1 + np.random.normal(0, daily_vol))
+                    (1 + np.random.normal(variance, stdev))
                 price_series.append(price)
                 count += 1
             else:
                 price = price_series[count] * \
-                    (1 + np.random.normal(0, daily_vol))
+                    (1 + np.random.normal(variance, stdev))
                 price_series.append(price)
                 count += 1
         simulation_df[x] = price_series
