@@ -19,11 +19,7 @@ def runInvestmentMonteCarloSim(symbol="^SPX", initialInvestment=1, monthlyInvest
     prices = web.DataReader(symbol, 'stooq', start, end)['Close']
     returns = prices.pct_change()
 
-    last_price = prices[0]
-
-    # This is pointless
-    shares = initialInvestment/last_price
-    last_price = last_price*shares
+    last_price = initialInvestment
 
     # Number​ of Simulations
     num_simulations = 1000
@@ -31,6 +27,8 @@ def runInvestmentMonteCarloSim(symbol="^SPX", initialInvestment=1, monthlyInvest
     num_days = 252 * year
 
     simulation_df = pd.DataFrame()
+
+    print(returns.std())
 
     for x in range(num_simulations):
         count = 0
